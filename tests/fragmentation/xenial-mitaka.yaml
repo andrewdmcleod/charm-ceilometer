@@ -1,0 +1,12 @@
+# linked fragment
+relations:
+- - ceilometer:shared-db
+  - mongodb:database
+- - ceilometer:identity-service
+  - keystone:identity-service
+services:
+  mongodb:
+    charm: cs:mongodb
+    num_units: 1
+    to:
+    - lxd:1

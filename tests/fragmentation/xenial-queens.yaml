@@ -1,0 +1,49 @@
+# linked fragment
+relations:
+- - ceph-osd:mon
+  - ceph-mon:osd
+- - gnocchi:storage-ceph
+  - ceph-mon:client
+- - gnocchi:shared-db
+  - mysql:shared-db
+- - gnocchi:coordinator-memcached
+  - memcached:cache
+- - gnocchi:metric-service
+  - ceilometer:metric-service
+- - gnocchi:identity-service
+  - keystone:identity-service
+- - ceilometer:identity-credentials
+  - keystone:identity-credentials
+services:
+  gnocchi:
+    num_units: 1
+    charm: cs:~openstack-charmers-next/gnocchi
+    options:
+      openstack-origin: cloud:xenial-queens
+    to:
+    - lxd:1
+  memcached:
+    num_units: 1
+    charm: cs:memcached
+    to:
+    - lxd:2
+  ceph-mon:
+    charm: cs:~openstack-charmers-next/ceph-mon
+    num_units: 3
+    options:
+      expected-osd-count: 3
+      source: cloud:xenial-queens
+    to:
+    - lxd:1
+    - lxd:2
+    - lxd:3
+  ceph-osd:
+    charm: cs:~openstack-charmers-next/ceph-osd
+    num_units: 3
+    options:
+      osd-devices: /dev/sdb
+      source: cloud:xenial-queens
+    to:
+    - '1'
+    - '2'
+    - '3'
